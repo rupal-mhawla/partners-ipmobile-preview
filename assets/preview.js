@@ -3,7 +3,7 @@ document.querySelectorAll('button').forEach(button=>button.addEventListener('cli
  const text=button.textContent.trim();
  if(button.hasAttribute('data-print')){window.print();return;}
  if(button.value==='next'||['Sign in','Set password and continue','Submit questionnaire'].includes(text)){location.href=next;return;}
- if(text==='Sign out'){location.href='login.html';return;}
+ if(text==='Sign out'){location.href='login.html?v=menu4';return;}
  document.getElementById('preview-status').textContent='Preview only — no changes were saved and no email was sent.';
 }));
 document.querySelectorAll('[data-unknown]').forEach(box=>box.addEventListener('change',()=>box.closest('[data-question]').querySelectorAll('input:not([data-unknown]),select,textarea').forEach(input=>input.disabled=box.checked)));
@@ -11,7 +11,7 @@ const search=document.getElementById('partner-search'),status=document.getElemen
 if(search&&status){const filter=()=>{let count=0;const rows=[...document.querySelectorAll('[data-partner-row]')];rows.forEach(row=>{row.hidden=!(row.dataset.search.includes(search.value.trim().toLowerCase())&&(status.value==='all'||row.dataset.status===status.value));if(!row.hidden)count++;});document.getElementById('partner-results').textContent=`${count} of ${rows.length} accounts shown`;};search.addEventListener('input',filter);status.addEventListener('change',filter);}
 const currentPage=location.pathname.split('/').pop()||'index.html';
 const currentMenu=currentPage.startsWith('questionnaire')?'questionnaire-0.html':currentPage==='admin-review.html'?'admin.html':currentPage==='submitted.html'?'review.html':currentPage;
-document.querySelectorAll('.preview-menu a').forEach(link=>{if(link.getAttribute('href')===currentMenu)link.setAttribute('aria-current','page');});
+document.querySelectorAll('.preview-menu a').forEach(link=>{if(link.getAttribute('href').split('?')[0]===currentMenu)link.setAttribute('aria-current','page');});
 const menu=document.querySelector('.preview-menu');
 if(menu&&window.matchMedia('(max-width:760px)').matches)menu.removeAttribute('open');
 const menuSize=window.matchMedia('(max-width:760px)');
