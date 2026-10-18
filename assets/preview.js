@@ -16,3 +16,5 @@ const menu=document.querySelector('.preview-menu');
 if(menu&&window.matchMedia('(max-width:760px)').matches)menu.removeAttribute('open');
 const menuSize=window.matchMedia('(max-width:760px)');
 menuSize.addEventListener('change',event=>{if(menu)menu.open=!event.matches;});
+const milestoneBox=document.querySelector('[name="q47_unknown"]');
+if(milestoneBox){const updateMilestone=()=>{document.querySelector('.milestone-unknown').hidden=!milestoneBox.checked;};milestoneBox.addEventListener('change',updateMilestone);updateMilestone();}
