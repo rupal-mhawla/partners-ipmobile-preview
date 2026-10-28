@@ -1,4 +1,8 @@
 const next=document.currentScript.dataset.next;
+document.querySelectorAll('[data-provider-select]').forEach(select=>{
+ const update=()=>{document.getElementById(select.getAttribute('aria-controls')).hidden=!['Other','Custom / in-house system'].includes(select.value);};
+ select.addEventListener('change',update);update();
+});
 document.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
  const text=button.textContent.trim();
  if(button.hasAttribute('data-print')){window.print();return;}
