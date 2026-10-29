@@ -1,4 +1,10 @@
 const next=document.currentScript.dataset.next;
+document.querySelectorAll('[data-vendor-details]').forEach(details=>{
+ const question=details.closest('[data-question]'),select=question.querySelector('select'),unknown=question.querySelector('[data-unknown]'),input=details.querySelector('input');
+ const update=()=>{const shown=select.value==='Yes'&&!unknown.checked;details.hidden=!shown;input.disabled=!shown;};
+ document.addEventListener('change',event=>{if(event.target===select||event.target===unknown)update();});
+ update();
+});
 document.querySelectorAll('[data-provider-select]').forEach(select=>{
  const update=()=>{document.getElementById(select.getAttribute('aria-controls')).hidden=!['Other','Custom / in-house system'].includes(select.value);};
  select.addEventListener('change',update);update();
