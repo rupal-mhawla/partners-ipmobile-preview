@@ -1,4 +1,43 @@
 const next=document.currentScript.dataset.next;
+const registrationKey='ipmobile-demo-registration';
+const registrationForm=document.querySelector('[data-demo-register]');
+if(registrationForm){
+ const password=registrationForm.elements.password,confirm=registrationForm.elements.confirm;
+ const checkMatch=()=>confirm.setCustomValidity(confirm.value!==password.value?'Passwords must match.':'');
+ password.addEventListener('input',checkMatch);confirm.addEventListener('input',checkMatch);
+ registrationForm.addEventListener('submit',event=>{
+  event.preventDefault();checkMatch();if(!registrationForm.reportValidity())return;
+  const registration={company:registrationForm.elements.company.value.trim(),contact:registrationForm.elements.contact.value.trim(),email:registrationForm.elements.email.value.trim(),created:new Date().toISOString()};
+  if(!registration.company||!registration.contact){document.getElementById('register-error').textContent='Enter your company and contact name.';return;}
+  try{sessionStorage.setItem(registrationKey,JSON.stringify(registration));}
+  catch{document.getElementById('register-error').textContent='Enable browser storage to try this registration preview.';return;}
+  password.value='';confirm.value='';
+  location.href='questionnaire-0.html?v=registration20261029';
+ });
+}
+let demoRegistration=null;
+try{demoRegistration=JSON.parse(sessionStorage.getItem(registrationKey)||'null');}catch{}
+if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegistration.email==='string'){
+ if(document.querySelector('.workspace')){
+  const heading=document.querySelector('.steps h2');if(heading)heading.textContent=demoRegistration.company;
+  const company=document.getElementById('company'),contact=document.getElementById('contact');
+  if(company)company.value=demoRegistration.company;if(contact)contact.value=demoRegistration.contact||'';
+  const email=document.querySelector('.user-email');if(email)email.textContent=demoRegistration.email;
+  document.querySelectorAll('p.hint').forEach(p=>{if(p.textContent.startsWith('Account email:'))p.textContent='Account email: '+demoRegistration.email;});
+ }
+ const tbody=document.querySelector('.admin-page tbody');
+ if(tbody){
+  const row=document.createElement('tr');row.setAttribute('data-partner-row','');row.dataset.search=(demoRegistration.company+' '+demoRegistration.email).toLowerCase();row.dataset.status='draft';
+  const identity=document.createElement('td'),name=document.createElement('strong'),email=document.createElement('span');
+  name.textContent=demoRegistration.company;email.textContent=demoRegistration.email;
+  identity.append(name,document.createElement('br'),email);row.append(identity);
+  for(const text of ['Draft',new Date(demoRegistration.created).toLocaleString(),'Active','Self-Registered','']){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}
+  tbody.prepend(row);
+  const count=tbody.querySelectorAll('[data-partner-row]').length;
+  document.querySelector('.admin-metrics strong').textContent=String(count);
+  document.querySelector('.table-title>span').textContent=count+' accounts';
+ }
+}
 document.querySelectorAll('[data-vendor-details]').forEach(details=>{
  const question=details.closest('[data-question]'),select=question.querySelector('select'),unknown=question.querySelector('[data-unknown]'),input=details.querySelector('input');
  const update=()=>{const shown=select.value==='Yes'&&!unknown.checked;details.hidden=!shown;input.disabled=!shown;};
@@ -10,6 +49,7 @@ document.querySelectorAll('[data-provider-select]').forEach(select=>{
  select.addEventListener('change',update);update();
 });
 document.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
+ if(button.closest('[data-demo-register]'))return;
  const text=button.textContent.trim();
  if(button.hasAttribute('data-print')){window.print();return;}
  if(button.value==='next'||['Sign in','Set password and continue','Submit questionnaire'].includes(text)){location.href=next;return;}
