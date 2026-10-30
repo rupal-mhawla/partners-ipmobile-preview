@@ -24,6 +24,7 @@ if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegi
   if(company)company.value=demoRegistration.company;if(contact)contact.value=demoRegistration.contact||'';
   const email=document.querySelector('.user-email');if(email)email.textContent=demoRegistration.email;
   document.querySelectorAll('p.hint').forEach(p=>{if(p.textContent.startsWith('Account email:'))p.textContent='Account email: '+demoRegistration.email;});
+  window.previewResponses.restore(demoRegistration);
  }
  const tbody=document.querySelector('.admin-page tbody');
  if(tbody){
@@ -32,6 +33,9 @@ if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegi
   name.textContent=demoRegistration.company;email.textContent=demoRegistration.email;
   identity.append(name,document.createElement('br'),email);row.append(identity);
   for(const text of ['Draft',new Date(demoRegistration.created).toLocaleString(),'Active','Self-Registered','']){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}
+  const viewAnswers=document.createElement('a');viewAnswers.href='admin-review.html?self=1';viewAnswers.textContent='View answers';
+  row.children[4].replaceChildren(viewAnswers);
+  const registrationLabel=document.createElement('small');registrationLabel.textContent='Self-Registered';row.children[0].append(document.createElement('br'),registrationLabel);
   const accessButton=document.createElement('button');
   accessButton.type='button';accessButton.className='text-button';accessButton.setAttribute('data-registration-access','');
   const updateAccess=()=>{
@@ -70,6 +74,7 @@ if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegi
   document.querySelector('.table-title>span').textContent=count+' accounts';
  }
 }
+window.previewResponses.render(demoRegistration);
 document.querySelectorAll('[data-vendor-details]').forEach(details=>{
  const question=details.closest('[data-question]'),select=question.querySelector('select'),unknown=question.querySelector('[data-unknown]'),input=details.querySelector('input');
  const update=()=>{const shown=select.value==='Yes'&&!unknown.checked;details.hidden=!shown;input.disabled=!shown;};
@@ -84,6 +89,13 @@ document.querySelectorAll('button').forEach(button=>button.addEventListener('cli
  if(button.closest('[data-demo-register]')||button.hasAttribute('data-delete-registration')||button.hasAttribute('data-registration-access'))return;
  const text=button.textContent.trim();
  if(button.hasAttribute('data-print')){window.print();return;}
+ if(demoRegistration&&button.closest('.form-panel')&&(button.value==='save'||button.value==='next')){
+  try{demoRegistration=window.previewResponses.save(demoRegistration,registrationKey);}
+  catch{document.getElementById('preview-status').textContent='Unable to save demo responses. Please try again.';return;}
+  if(button.value==='next')location.href=next;
+  else document.getElementById('preview-status').textContent='Demo responses saved in this browser tab.';
+  return;
+ }
  if(button.value==='next'||['Sign in','Set password and continue','Submit questionnaire'].includes(text)){location.href=next;return;}
  if(text==='Sign out'){location.href='login.html?v=menu4';return;}
  document.getElementById('preview-status').textContent='Preview only — no changes were saved and no email was sent.';
