@@ -32,6 +32,19 @@ if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegi
   name.textContent=demoRegistration.company;email.textContent=demoRegistration.email;
   identity.append(name,document.createElement('br'),email);row.append(identity);
   for(const text of ['Draft',new Date(demoRegistration.created).toLocaleString(),'Active','Self-Registered','']){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}
+  const deleteButton=document.createElement('button');
+  deleteButton.type='button';deleteButton.className='primary';deleteButton.textContent='Delete partner';deleteButton.setAttribute('data-delete-registration','');
+  deleteButton.addEventListener('click',()=>{
+   if(!window.confirm('Delete '+demoRegistration.company+' and its demo registration details?'))return;
+   try{sessionStorage.removeItem(registrationKey);}catch{document.getElementById('preview-status').textContent='Unable to delete the demo registration. Please try again.';return;}
+   row.remove();demoRegistration=null;
+   const remaining=tbody.querySelectorAll('[data-partner-row]').length;
+   document.querySelector('.admin-metrics strong').textContent=String(remaining);
+   document.querySelector('.table-title>span').textContent=remaining+' accounts';
+   document.getElementById('partner-search').dispatchEvent(new Event('input'));
+   document.getElementById('preview-status').textContent='Demo registration deleted.';
+  });
+  row.lastElementChild.append(deleteButton);
   tbody.prepend(row);
   const count=tbody.querySelectorAll('[data-partner-row]').length;
   document.querySelector('.admin-metrics strong').textContent=String(count);
@@ -49,7 +62,7 @@ document.querySelectorAll('[data-provider-select]').forEach(select=>{
  select.addEventListener('change',update);update();
 });
 document.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
- if(button.closest('[data-demo-register]'))return;
+ if(button.closest('[data-demo-register]')||button.hasAttribute('data-delete-registration'))return;
  const text=button.textContent.trim();
  if(button.hasAttribute('data-print')){window.print();return;}
  if(button.value==='next'||['Sign in','Set password and continue','Submit questionnaire'].includes(text)){location.href=next;return;}
