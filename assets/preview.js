@@ -33,7 +33,7 @@ if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegi
   identity.append(name,document.createElement('br'),email);row.append(identity);
   for(const text of ['Draft',new Date(demoRegistration.created).toLocaleString(),'Active','Self-Registered','']){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}
   const deleteButton=document.createElement('button');
-  deleteButton.type='button';deleteButton.className='primary';deleteButton.textContent='Delete partner';deleteButton.setAttribute('data-delete-registration','');
+  deleteButton.type='button';deleteButton.className='delete-invitation-button';deleteButton.textContent='Delete partner';deleteButton.setAttribute('data-delete-registration','');
   deleteButton.addEventListener('click',()=>{
    if(!window.confirm('Delete '+demoRegistration.company+' and its demo registration details?'))return;
    try{sessionStorage.removeItem(registrationKey);}catch{document.getElementById('preview-status').textContent='Unable to delete the demo registration. Please try again.';return;}
@@ -44,6 +44,7 @@ if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegi
    document.getElementById('partner-search').dispatchEvent(new Event('input'));
    document.getElementById('preview-status').textContent='Demo registration deleted.';
   });
+  row.lastElementChild.className='invitation-action';
   row.lastElementChild.append(deleteButton);
   tbody.prepend(row);
   const count=tbody.querySelectorAll('[data-partner-row]').length;
