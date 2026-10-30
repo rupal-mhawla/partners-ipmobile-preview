@@ -32,6 +32,24 @@ if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegi
   name.textContent=demoRegistration.company;email.textContent=demoRegistration.email;
   identity.append(name,document.createElement('br'),email);row.append(identity);
   for(const text of ['Draft',new Date(demoRegistration.created).toLocaleString(),'Active','Self-Registered','']){const cell=document.createElement('td');cell.textContent=text;row.append(cell);}
+  const accessButton=document.createElement('button');
+  accessButton.type='button';accessButton.className='text-button';accessButton.setAttribute('data-registration-access','');
+  const updateAccess=()=>{
+   const active=demoRegistration.active!==false;
+   row.children[3].textContent=active?'Active':'Disabled';
+   row.dataset.status=active?'draft':'disabled';
+   accessButton.textContent=active?'Disable access':'Restore access';
+  };
+  accessButton.addEventListener('click',()=>{
+   const updated={...demoRegistration,active:demoRegistration.active===false};
+   try{sessionStorage.setItem(registrationKey,JSON.stringify(updated));}
+   catch{document.getElementById('preview-status').textContent='Unable to update demo access. Please try again.';return;}
+   demoRegistration=updated;updateAccess();
+   document.getElementById('partner-search').dispatchEvent(new Event('input'));
+   document.getElementById('preview-status').textContent=updated.active?'Demo access restored.':'Demo access disabled.';
+  });
+  const accessActions=document.createElement('div');accessActions.append(accessButton);row.children[4].append(accessActions);
+  updateAccess();
   const deleteButton=document.createElement('button');
   deleteButton.type='button';deleteButton.className='delete-invitation-button';deleteButton.textContent='Delete partner';deleteButton.setAttribute('data-delete-registration','');
   deleteButton.addEventListener('click',()=>{
@@ -63,7 +81,7 @@ document.querySelectorAll('[data-provider-select]').forEach(select=>{
  select.addEventListener('change',update);update();
 });
 document.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
- if(button.closest('[data-demo-register]')||button.hasAttribute('data-delete-registration'))return;
+ if(button.closest('[data-demo-register]')||button.hasAttribute('data-delete-registration')||button.hasAttribute('data-registration-access'))return;
  const text=button.textContent.trim();
  if(button.hasAttribute('data-print')){window.print();return;}
  if(button.value==='next'||['Sign in','Set password and continue','Submit questionnaire'].includes(text)){location.href=next;return;}
