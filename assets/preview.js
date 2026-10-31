@@ -17,6 +17,12 @@ if(registrationForm){
 }
 let demoRegistration=null;
 try{demoRegistration=JSON.parse(sessionStorage.getItem(registrationKey)||'null');}catch{}
+if(demoRegistration&&demoRegistration.sectionOrder!==2){
+ const sections=demoRegistration.sections;
+ if(sections){const timeline=sections['questionnaire-1.html'],mobile=sections['questionnaire-4.html'];delete sections['questionnaire-1.html'];delete sections['questionnaire-4.html'];if(mobile)sections['questionnaire-1.html']=mobile;if(timeline)sections['questionnaire-4.html']=timeline;}
+ demoRegistration.sectionOrder=2;
+ try{sessionStorage.setItem(registrationKey,JSON.stringify(demoRegistration));}catch{}
+}
 if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegistration.email==='string'){
  if(document.querySelector('.workspace')){
   const heading=document.querySelector('.steps h2');if(heading)heading.textContent=demoRegistration.company;
@@ -82,12 +88,16 @@ document.querySelectorAll('[data-vendor-details]').forEach(details=>{
  update();
 });
 document.querySelectorAll('[data-provider-select]').forEach(select=>{
- const update=()=>{document.getElementById(select.getAttribute('aria-controls')).hidden=!['Other','Custom / in-house system'].includes(select.value);};
+ const update=()=>{const details=document.getElementById(select.getAttribute('aria-controls'));details.hidden=!['Other','Custom / in-house system'].includes(select.value);details.querySelectorAll('input').forEach(input=>input.disabled=details.hidden);};
  select.addEventListener('change',update);update();
 });
 document.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
  if(button.closest('[data-demo-register]')||button.hasAttribute('data-delete-registration')||button.hasAttribute('data-registration-access'))return;
  const text=button.textContent.trim();
+ if(button.value==='next'&&document.getElementById('company')){
+  const invalid=[...document.querySelectorAll('.form-panel input,.form-panel select')].find(input=>!input.disabled&&!input.checkValidity());
+  if(invalid){invalid.reportValidity();return;}
+ }
  if(button.hasAttribute('data-print')){window.print();return;}
  if(demoRegistration&&button.closest('.form-panel')&&(button.value==='save'||button.value==='next')){
   try{demoRegistration=window.previewResponses.save(demoRegistration,registrationKey);}
