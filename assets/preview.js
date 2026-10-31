@@ -81,7 +81,7 @@ if(demoRegistration&&typeof demoRegistration.company==='string'&&typeof demoRegi
  }
 }
 window.previewResponses.render(demoRegistration);
-document.querySelectorAll('[data-vendor-details]').forEach(details=>{
+document.querySelectorAll('[data-vendor-details],[data-technician-count]').forEach(details=>{
  const question=details.closest('[data-question]'),select=question.querySelector('select'),unknown=question.querySelector('[data-unknown]'),input=details.querySelector('input');
  const update=()=>{const shown=select.value==='Yes'&&!unknown.checked;details.hidden=!shown;input.disabled=!shown;};
  document.addEventListener('change',event=>{if(event.target===select||event.target===unknown)update();});
@@ -94,6 +94,10 @@ document.querySelectorAll('[data-provider-select]').forEach(select=>{
 document.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
  if(button.closest('[data-demo-register]')||button.hasAttribute('data-delete-registration')||button.hasAttribute('data-registration-access'))return;
  const text=button.textContent.trim();
+ if(button.value==='save'||button.value==='next'){
+  const count=document.getElementById('q34_count');
+  if(count&&!count.disabled&&!count.reportValidity())return;
+ }
  if(button.value==='next'&&document.getElementById('company')){
   const invalid=[...document.querySelectorAll('.form-panel input,.form-panel select')].find(input=>!input.disabled&&!input.checkValidity());
   if(invalid){invalid.reportValidity();return;}
