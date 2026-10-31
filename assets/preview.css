@@ -9,7 +9,7 @@
 
 /* Clear, consistent section navigation with a centered main profile link. */
 .steps nav > a{font-size:.875rem;font-weight:700;line-height:1.5}
-.steps nav > a > span{font-size:.9rem;font-weight:700}
+.steps nav > a > span{font-size:.75rem;font-weight:700}
 .steps nav > a[href^="questionnaire-0.html"],.steps nav > a[href^="questionnaire-0.html"].active{display:flex;align-items:center;justify-content:center;text-align:center;min-height:48px;margin:4px 0 12px;padding:12px 16px;border:0;border-radius:0;background:transparent;color:var(--navy);box-shadow:none;font-size:.875rem;font-weight:750}
 .steps nav > a[href^="questionnaire-0.html"]:hover{color:var(--blue);background:transparent}
 .steps nav > a[href^="questionnaire-0.html"].active{color:var(--pink)}
